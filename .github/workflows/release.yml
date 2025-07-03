@@ -40,6 +40,9 @@ jobs:
           - mipsel_74kc
           - mipsel_mips32
           - x86_64
+        sdk:
+          - openwrt-24.10
+          - SNAPSHOT
 
     steps:
       - uses: actions/checkout@v4
@@ -49,7 +52,7 @@ jobs:
       - name: Building packages
         uses: sbwml/openwrt-gh-action-sdk@main
         env:
-          ARCH: ${{ matrix.arch }}-openwrt-24.10
+          ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
           FEEDNAME: packages_ci
           PACKAGES: luci-app-ddns-go
           NO_REFRESH_CHECK: true
@@ -57,8 +60,8 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.arch }}
-          path: bin/packages/${{ matrix.arch }}/packages_ci/*.ipk
+          name: ${{ matrix.arch }}--${{ matrix.sdk }}
+          path: bin/packages/${{ matrix.arch }}/packages_ci/*.[ai]pk
 
       - name: Upload packages
         uses: ncipollo/release-action@v1
@@ -67,4 +70,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           replacesArtifacts: true
-          artifacts: "bin/packages/${{ matrix.arch }}/packages_ci/*.ipk"
+          artifacts: "bin/packages/${{ matrix.arch }}/packages_ci/*.[ai]pk"
